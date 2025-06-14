@@ -1,0 +1,35 @@
+Performans Özeti
+================
+Rapor tarihi: Cts 14 Haz 2025 22:24:27 +03
+
+--- version1 ---
+Versiyon: Single Thread
+Süre: 0.046277 saniye
+Saniyede deneme: 1.51524e+07
+Versiyon: Single Thread
+Süre: 0.044377 saniye
+Saniyede deneme: 1.58012e+07
+
+--- version2 ---
+Versiyon: Multi Thread
+Süre: 0.001411 saniye
+Saniyede deneme: 6.83055e+07
+
+--- version3 ---
+Versiyon: Vectorized Multi Thread
+Süre: 0.001053 saniye
+Saniyede deneme: 9.35783e+07
+
+
+Sistem Bilgileri:
+==================
+İşlemci Bilgileri:
+processor	: 0
+model name	: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
+cpu MHz		: 4309.312
+cache size	: 12288 KB
+processor	: 1
+Bellek Bilgileri:
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       4,4Gi       304Mi       993Mi        10Gi       9,8Gi
+Swap:             0B          0B          0B

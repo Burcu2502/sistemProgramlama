@@ -1,0 +1,36 @@
+Versiyon: Vectorized Multi Thread
+Bulunan şifre: abc1
+Süre: 0.001053 saniye
+Deneme sayısı: 98538
+Saniyede deneme: 9.35783e+07
+------------------------
+Versiyon: Vectorized Multi Thread
+Bulunan şifre: abc1
+Süre: 0.000912 saniye
+Deneme sayısı: 88503
+Saniyede deneme: 9.70428e+07
+------------------------
+Versiyon: Vectorized Multi Thread
+Bulunan şifre: heln1
+Süre: 0.073527 saniye
+Deneme sayısı: 7876778
+Saniyede deneme: 1.07128e+08
+------------------------
+Versiyon: Vectorized Multi Thread
+Bulunan şifre: test1
+Süre: 0.41523 saniye
+Deneme sayısı: 49360025
+Saniyede deneme: 1.18874e+08
+------------------------
+Versiyon: Vectorized Multi Thread
+Bulunan şifre: test12
+Süre: 18.5034 saniye
+Deneme sayısı: 1834595246
+Saniyede deneme: 9.91491e+07
+------------------------
+Versiyon: Vectorized Multi Thread
+Bulunan şifre: test1
+Süre: 0.671084 saniye
+Deneme sayısı: 48597321
+Saniyede deneme: 7.24162e+07
+------------------------

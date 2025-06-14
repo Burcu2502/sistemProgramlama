@@ -1,0 +1,60 @@
+Versiyon: Single Thread
+Bulunan şifre: abao
+Süre: 0.046277 saniye
+Deneme sayısı: 701209
+Saniyede deneme: 1.51524e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: abao
+Süre: 0.044377 saniye
+Deneme sayısı: 701209
+Saniyede deneme: 1.58012e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: demms
+Süre: 2.52214 saniye
+Deneme sayısı: 32536264
+Saniyede deneme: 1.29003e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: demms
+Süre: 2.40452 saniye
+Deneme sayısı: 32536264
+Saniyede deneme: 1.35313e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: demms
+Süre: 2.45343 saniye
+Deneme sayısı: 32536264
+Saniyede deneme: 1.32616e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: demms
+Süre: 2.331 saniye
+Deneme sayısı: 32536264
+Saniyede deneme: 1.39581e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: test12
+Süre: 158.92 saniye
+Deneme sayısı: 1801506296
+Saniyede deneme: 1.13359e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: 123
+Süre: 0.001898 saniye
+Deneme sayısı: 39952
+Saniyede deneme: 2.10495e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: test1
+Süre: 3.5581 saniye
+Deneme sayısı: 47987192
+Saniyede deneme: 1.34867e+07
+------------------------
+Versiyon: Single Thread
+Bulunan şifre: test1
+Süre: 3.7403 saniye
+Deneme sayısı: 47987192
+Saniyede deneme: 1.28298e+07
+------------------------

@@ -1,0 +1,18 @@
+gprof -> hangi fonk kaç kere çalıştı
+disk okuma, disk yazma, user ne kadar kullanmış proje çalışırken
+time -> kaç saniye çalıştı
+valgrind bunu
+mpstat komutu, bunu da kesin kullancan, kaç cpu var kaç çekirdek hangisi ne kadar kullanılıyor hepsini çalıştırcak
+nice, sys, iowat vs vs bunlar ne, mpstatta çıkıyo ya o değerler
+vmstat komutu 
+iamstat
+top nedir, bunu aççan bakacn ss alabilirsin. cpuyu ne kadar kullaıuo vs raporlarda bunları vercen sunumu
+2 3 terminal aç 
+projeni çalıştırırken top ile ne nedir bakcan, birden fazla terminal çalıştırabilirsin. mesela mpstat komutunu çalıştır ki 
+ne nerede ne kullanmış görebil
+vesiyonlama yapcan. teker teker her şeyi göstereceksiin. gelişme kısmını görmek istiyormuş hoca
+dosya oku dosya yaz ve tüm işlemciyi kullasın. vs 
+bash dosyası yaz bi tane tüm isterleri o çalıştırsın, mesela şey yapabilisin
+bash içerisinde tüm komutları çalıştırsın her birini terminal açsın göstersin gibi
+her bi versiyon için bash oluşturabiliriz. kod olabildiğince basit ve öğrenci yazmış gibi olsun. tüm komutlar için bash dosyası yazarsan 
+idle yi 100 yapman isteniyor.

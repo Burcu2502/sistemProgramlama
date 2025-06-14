@@ -1,0 +1,49 @@
+Proje Başlığı: C++ ile Paralel Brute-Force Şifre Kırma Simülasyonu
+
+1. Giriş (Nedir?)
+Bu proje, C++ programlama dili kullanılarak yapılan bir şifre kırma simülasyonudur. Brute-force (kaba kuvvet) yöntemiyle yani tüm olası karakter kombinasyonlarını deneyerek, doğru şifre bulunmaya çalışılacaktır. Şifre, bir "hash" ile karşılaştırılarak kontrol edilir. Yani sistem, doğru kombinasyonu bulana kadar denemeler yapar.
+
+Projede performansı artırmak için:
+
+Çoklu iş parçacığı (multithreading),
+
+Paralel çalışma (parallelism),
+
+Vektörleştirme (vectorization, yani CPU'nun aynı anda birden fazla veriyi işlemesi)
+gibi ileri düzey teknikler kullanılacaktır.
+
+2. Amaçlar (Neden?)
+Bu proje ile aşağıdaki hedefler gerçekleştirilmek isteniyor:
+
+Gerçek zamanlı hesaplama için sistem seviyesinde C++ becerisi geliştirmek.
+
+Paralel hesaplama ve iş yükünün farklı iş parçacıklarına dağıtılmasını öğrenmek.
+
+Bilgisayarın işlem gücünü artırmanın yollarını (özellikle vektörleştirme ile) göstermek.
+
+Güvenlik araştırmalarında kullanılan temel bir şifre kırma tekniğini simüle etmek.
+
+Modern C++ dilinin çoklu iş parçacığı (concurrency) özelliklerini uygulamalı öğrenmek.
+
+3. Yöntem (Nasıl?)
+Projenin nasıl yapılacağı aşağıda anlatılmış:
+
+Şifre denemeleri için kullanılacak karakter kombinasyonları çoklu iş parçacıkları (thread’ler) arasında bölünecek.
+
+Bunun için std::thread, std::mutex ve std::async gibi modern C++ araçları kullanılacak.
+
+Her iş parçacığı kendisine ayrılmış bir karakter aralığını deneyerek doğru şifreyi arayacak.
+
+Şifrenin doğruluğu basit bir hash karşılaştırmasıyla kontrol edilecek.
+
+Deneyler şu yapılandırmalarla yapılacak:
+
+Tek iş parçacıklı (single-threaded),
+
+Çok iş parçacıklı (multi-threaded),
+
+Vektörleştirilmiş (vectorized) versiyonlar.
+
+Kısacası bu proje, C++’ın sistem seviyesinde ne kadar güçlü olduğunu göstermek, paralel hesaplama tekniklerini deneyimlemek ve gerçek dünya problemlerinden biri olan şifre kırmayı simüle etmek için planlanmış. Teknik bir proje ama temel mantığı: “Bir şifreyi deneme-yanılma ile ama hızlı ve akıllı yollarla nasıl buluruz?” sorusuna cevap aramak.
+
+İstersen bu açıklamayı daha da sadeleştirebilir veya sunum formatına çevirebilirim.

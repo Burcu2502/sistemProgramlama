@@ -1,0 +1,7 @@
+# Performans Verileri (CSV Format)
+Version,Time_Seconds,Attempts_Per_Second
+version1,0.046277
+0.044377,1.51524e+07
+1.58012e+07
+version2,0.001411,6.83055e+07
+version3,0.001053,9.35783e+07
