@@ -1,37 +1,37 @@
 === SİSTEM BİLGİLERİ ===
-Cts 14 Haz 2025 22:25:20 +03
+Cts 14 Haz 2025 23:49:13 +03
 
 İşlemci Bilgileri:
 processor	: 0
 model name	: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
-cpu MHz		: 4202.899
+cpu MHz		: 4200.065
 cache size	: 12288 KB
 processor	: 1
 model name	: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
-cpu MHz		: 4202.211
+cpu MHz		: 4241.332
 cache size	: 12288 KB
 processor	: 2
 model name	: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
-cpu MHz		: 4204.365
+cpu MHz		: 800.000
 cache size	: 12288 KB
 processor	: 3
 model name	: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
-cpu MHz		: 4254.343
+cpu MHz		: 4200.117
 cache size	: 12288 KB
 processor	: 4
 model name	: Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz
-cpu MHz		: 4204.678
+cpu MHz		: 4260.383
 cache size	: 12288 KB
 
 Bellek Bilgileri:
                total        used        free      shared  buff/cache   available
-Mem:            15Gi       4,3Gi       478Mi       1,0Gi        10Gi       9,9Gi
+Mem:            15Gi       4,0Gi       593Mi       1,0Gi        10Gi        10Gi
 Swap:             0B          0B          0B
 
 Disk Bilgileri:
 Filesystem      Size  Used Avail Use% Mounted on
 tmpfs           1,6G  2,2M  1,6G   1% /run
-/dev/nvme0n1p5   59G   39G   17G  70% /
+/dev/nvme0n1p5   59G   40G   17G  71% /
 tmpfs           7,8G   47M  7,7G   1% /dev/shm
 tmpfs           5,0M  4,0K  5,0M   1% /run/lock
 efivarfs        448K   56K  388K  13% /sys/firmware/efi/efivars

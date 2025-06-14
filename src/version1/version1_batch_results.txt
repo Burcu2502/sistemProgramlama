@@ -1,0 +1,18 @@
+=== Single Thread Batch - BATCH SONUÇLARI ===
+Toplam süre: 118.911 saniye
+Toplam şifre sayısı: 10
+
+Şifre: abc | BULUNDU | Süre: 0s | Deneme: 3961
+Şifre: test | BULUNDU | Süre: 0.063s | Deneme: 957944
+Şifre: demo | BULUNDU | Süre: 0.047s | Deneme: 716872
+Şifre: pass | BULUNDU | Süre: 0.058s | Deneme: 911140
+Şifre: key | BULUNDU | Süre: 0.001s | Deneme: 32591
+Şifre: hello | BULUNDU | Süre: 1.983s | Deneme: 25769852
+Şifre: admin | BULUNDU | Süre: 1.728s | Deneme: 23951521
+Şifre: user1 | BULUNDU | Süre: 3.527s | Deneme: 47876241
+Şifre: test1 | BULUNDU | Süre: 3.52s | Deneme: 47987192
+Şifre: secret | BULUNDU | Süre: 107.979s | Deneme: 1218565495
+
+Başarı oranı: 10/10 (100%)
+Toplam deneme: 1366772809
+Ortalama hız: 1.14941e+07 deneme/saniye
