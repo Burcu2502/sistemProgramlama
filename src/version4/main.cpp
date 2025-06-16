@@ -11,59 +11,56 @@ std::atomic<long long> total_attempts(0);
 std::string found_password;
 std::mutex result_mutex;
 
-// V3: Batch processing ile optimize edilmiş worker thread
-void optimized_worker_thread(const std::string& target_password, int thread_id, int num_threads) {
+// V4: Akıllı optimizasyonlu worker thread
+void smart_worker_thread(const std::string& target_password, int thread_id, int num_threads) {
     long long local_attempts = 0;
     size_t target_hash = simple_hash(target_password);
     
-    // 8'li gruplar halinde batch processing
-    constexpr int BATCH_SIZE = 8;
-    std::vector<std::string> candidate_batch;
-    candidate_batch.reserve(BATCH_SIZE);
+    // Charset uzunluğunu önceden hesapla
+    const size_t charset_len = CHARSET.length();
     
-    // Memory allocation'ı azalt
+    // String'i tekrar kullan, sürekli allocation yapma
     std::string candidate;
     candidate.reserve(MAX_PASSWORD_LENGTH);
     
-    for (int length = 1; length <= MAX_PASSWORD_LENGTH && !password_found; length++) {
-        long long combinations_for_length = std::pow(CHARSET.length(), length);
+    for (int length = 1; length <= MAX_PASSWORD_LENGTH && !password_found.load(std::memory_order_relaxed); length++) {
+        long long combinations_for_length = std::pow(charset_len, length);
         
-        // V2 gibi static work distribution ama batch processing ile
-        for (long long i = thread_id; i < combinations_for_length && !password_found; i += num_threads) {
-            
-            // Şifreyi direkt burada üret
-            candidate.clear();
-            long long temp = i;
-            for (int pos = 0; pos < length; pos++) {
-                candidate += CHARSET[temp % CHARSET.length()];
-                temp /= CHARSET.length();
-            }
-            
-            candidate_batch.push_back(candidate);
+        // İş yükünü thread'ler arasında adil dağıt
+        long long chunk_size = combinations_for_length / num_threads;
+        long long start = thread_id * chunk_size;
+        long long end = (thread_id == num_threads - 1) ? combinations_for_length : start + chunk_size;
+        
+        for (long long i = start; i < end && !password_found.load(std::memory_order_relaxed); i++) {
             local_attempts++;
             
-            // 8'li gruplar halinde hash hesapla
-            if (candidate_batch.size() == BATCH_SIZE || i == combinations_for_length - 1) {
-                // Batch'teki tüm şifreleri kontrol et
-                for (size_t j = 0; j < candidate_batch.size(); j++) {
-                    if (simple_hash(candidate_batch[j]) == target_hash) {
-                        if (candidate_batch[j] == target_password) {
-                            std::lock_guard<std::mutex> lock(result_mutex);
-                            if (!password_found) {
-                                password_found = true;
-                                found_password = candidate_batch[j];
-                            }
-                            candidate_batch.clear();
-                            goto found_exit;
-                        }
+            // Şifreyi direkt burada üret, fonksiyon çağırma
+            candidate.clear();
+            candidate.resize(length);
+            long long temp = i;
+            for (int pos = 0; pos < length; pos++) {
+                candidate[pos] = CHARSET[temp % charset_len];
+                temp /= charset_len;
+            }
+            
+            // Önce hash karşılaştır, daha hızlı
+            size_t candidate_hash = simple_hash(candidate);
+            if (candidate_hash == target_hash) {
+                // Hash eşleşirse string karşılaştır
+                if (candidate == target_password) {
+                    std::lock_guard<std::mutex> lock(result_mutex);
+                    if (!password_found) {
+                        found_password = candidate;
+                        password_found = true;
+                        std::cout << "Thread " << thread_id << " buldu: " << candidate << "\n";
                     }
+                    goto thread_exit;
                 }
-                candidate_batch.clear();
             }
             
             // İlerleme raporu
             if (local_attempts % 50000 == 0) {
-                std::cout << "V3-T" << thread_id << " - Deneme: " << local_attempts 
+                std::cout << "V4-T" << thread_id << " - Deneme: " << local_attempts 
                          << " | Denenen: \"" << candidate << "\""
                          << " | Hedef: \"" << target_password << "\""
                          << " | Uzunluk: " << length << "\n";
@@ -71,25 +68,28 @@ void optimized_worker_thread(const std::string& target_password, int thread_id, 
         }
     }
     
-    found_exit:
-    total_attempts += local_attempts;
+    thread_exit:
+    total_attempts.fetch_add(local_attempts, std::memory_order_relaxed);
 }
 
-// V3: Batch processing ile optimize edilmiş şifre kırma
-std::string crack_password_optimized(const std::string& target_password, long long& attempts) {
-    // Global değişkenleri sıfırla
+// V4: Akıllı şifre kırma fonksiyonu
+std::string crack_password_smart(const std::string& target_password, long long& attempts) {
+    // Global durumu sıfırla
     password_found = false;
     total_attempts = 0;
-    found_password = "";
+    found_password.clear();
     
-    // V2 ile aynı thread sayısı
-    const int num_threads = 12;
+    // Optimal thread sayısı: fazla thread overhead yaratır
+    int num_threads = std::thread::hardware_concurrency();
+    if (num_threads == 0) num_threads = 8;
+    num_threads = std::min(static_cast<int>(std::thread::hardware_concurrency()), 12);
     
     std::vector<std::thread> threads;
+    threads.reserve(num_threads);
     
     // Thread'leri başlat
     for (int i = 0; i < num_threads; i++) {
-        threads.emplace_back(optimized_worker_thread, target_password, i, num_threads);
+        threads.emplace_back(smart_worker_thread, target_password, i, num_threads);
     }
     
     // Thread'lerin bitmesini bekle
@@ -97,12 +97,12 @@ std::string crack_password_optimized(const std::string& target_password, long lo
         t.join();
     }
     
-    attempts = total_attempts;
+    attempts = total_attempts.load();
     return found_password;
 }
 
 int main() {
-    std::cout << "=== VERSION 3: BATCH PROCESSING OPTIMIZASYONU ===\n\n";
+    std::cout << "=== VERSION 4: AKILLI OPTIMIZASYONLAR ===\n\n";
     
     // Veri setini yükle
     std::string dataset_file = "../../dataset/passwords.txt";
@@ -110,14 +110,15 @@ int main() {
     
     if (passwords.empty()) {
         std::cout << "Veri seti bos, tek sifre moduna geciliyor...\n";
-        std::string single_password = "test";
-        passwords.push_back(single_password);
+        passwords.push_back("test");
     }
+    
+    int num_threads = std::min(static_cast<int>(std::thread::hardware_concurrency()), 12);
     
     std::cout << "Karakter seti: " << CHARSET << "\n";
     std::cout << "Maksimum uzunluk: " << MAX_PASSWORD_LENGTH << "\n";
-    std::cout << "Thread sayisi: 12\n";
-    std::cout << "Optimizasyonlar: Batch processing (8x), inline generation, memory optimization\n";
+    std::cout << "Thread sayisi: " << num_threads << "\n";
+    std::cout << "Optimizasyonlar: String reuse, inline generation, optimal work distribution\n";
     std::cout << "Ilerleme her 50.000 denemede gosterilecek\n\n";
     
     // Sonuç depolama
@@ -128,7 +129,7 @@ int main() {
     Timer total_timer;
     total_timer.start();
     
-    // Her şifreyi tek tek işle
+    // Her şifreyi işle
     for (size_t i = 0; i < passwords.size(); i++) {
         std::string target_password = passwords[i];
         size_t target_hash = simple_hash(target_password);
@@ -141,7 +142,7 @@ int main() {
         timer.start();
         
         long long attempts = 0;
-        std::string found_pwd = crack_password_optimized(target_password, attempts);
+        std::string found_pwd = crack_password_smart(target_password, attempts);
         
         double elapsed_time = timer.elapsed();
         
@@ -162,14 +163,14 @@ int main() {
         if (elapsed_time > 0) {
             std::cout << " | Hiz: " << (attempts / elapsed_time) << " d/s\n";
         } else {
-            std::cout << " | Hiz: cok hizli!\n";
+            std::cout << " | Hiz: ANINDA!\n";
         }
     }
     
     double total_time = total_timer.elapsed();
     
-    // Özet sonuçlar
-    std::cout << "\n=== BATCH PROCESSING SONUCLARI ===\n";
+    // Final sonuçlar
+    std::cout << "\n=== AKILLI OPTIMIZASYON SONUCLARI ===\n";
     int found_count = 0;
     long long total_attempts_sum = 0;
     
@@ -183,11 +184,11 @@ int main() {
     std::cout << "Basari orani: " << (100.0 * found_count / passwords.size()) << "%\n";
     std::cout << "Toplam sure: " << total_time << " saniye\n";
     std::cout << "Toplam deneme: " << total_attempts_sum << "\n";
-    std::cout << "Ortalama hiz: " << (total_attempts_sum / total_time) << " deneme/saniye\n";
+    std::cout << "AKILLI HIZ: " << (total_attempts_sum / total_time) << " deneme/saniye\n";
     
     // Sonuçları dosyaya kaydet
-    save_batch_results("results_v3.txt", "BATCH PROCESSING", 
+    save_batch_results("results_v4.txt", "AKILLI OPTIMIZASYONLAR", 
                       passwords, found_results, times, attempts_list, total_time);
     
     return 0;
-}
+} 

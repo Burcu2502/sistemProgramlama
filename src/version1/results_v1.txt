@@ -1,0 +1,21 @@
+=== TEK THREAD - BATCH SONUÇLARI ===
+Toplam süre: 230.718 saniye
+Toplam şifre sayısı: 13
+
+Şifre: abc | BULUNDU | Süre: 0s | Deneme: 3961
+Şifre: a12 | BULUNDU | Süre: 0.001s | Deneme: 38593
+Şifre: a4f | BULUNDU | Süre: 0s | Deneme: 8893
+Şifre: test | BULUNDU | Süre: 0.061s | Deneme: 957944
+Şifre: demo | BULUNDU | Süre: 0.045s | Deneme: 716872
+Şifre: pass | BULUNDU | Süre: 0.058s | Deneme: 911140
+Şifre: key | BULUNDU | Süre: 0.001s | Deneme: 32591
+Şifre: hello | BULUNDU | Süre: 1.95s | Deneme: 25769852
+Şifre: admin | BULUNDU | Süre: 1.825s | Deneme: 23951521
+Şifre: user1 | BULUNDU | Süre: 3.686s | Deneme: 47876241
+Şifre: test1 | BULUNDU | Süre: 3.687s | Deneme: 47987192
+Şifre: secret | BULUNDU | Süre: 110.633s | Deneme: 1218565495
+Şifre: tx123s | BULUNDU | Süre: 108.764s | Deneme: 1200636020
+
+Başarı oranı: 13/13 (100%)
+Toplam deneme: 2567456315
+Ortalama hız: 1.11281e+07 deneme/saniye

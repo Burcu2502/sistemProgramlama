@@ -2,14 +2,14 @@
 #include <iostream>
 #include <fstream>
 
-// Tek iş parçacıklı brute force fonksiyonu
+// Tek thread brute force fonksiyonu
 std::string crack_password_single_thread(const std::string& target_password, long long& attempts) {
     attempts = 0;
     size_t target_hash = simple_hash(target_password);
     
     // Uzunluk 1'den başlayarak maksimum uzunluğa kadar dene
     for (int length = 1; length <= MAX_PASSWORD_LENGTH; length++) {
-        std::cout << "Uzunluk " << length << " şifreler deneniyor...\n";
+        std::cout << "Uzunluk " << length << " sifreler deneniyor...\n";
         
         // Bu uzunluk için tüm kombinasyonları dene
         long long combinations_for_length = std::pow(CHARSET.length(), length);
@@ -18,7 +18,7 @@ std::string crack_password_single_thread(const std::string& target_password, lon
             std::string candidate = generate_password(i, length);
             attempts++;
             
-            // Her 50000 denemede bir ilerleme göster (daha az spam)
+            // Her 50000 denemede bir ilerleme göster
             if (attempts % 50000 == 0) {
                 std::cout << "V1 - Deneme: " << attempts 
                          << " | Denenen: \"" << candidate << "\""
@@ -26,9 +26,9 @@ std::string crack_password_single_thread(const std::string& target_password, lon
                          << " | Uzunluk: " << length << "\n";
             }
             
-            // Hash karşılaştırması yap - gerçek brute force için
+            // Hash karşılaştırması yap
             if (simple_hash(candidate) == target_hash) {
-                // Double check - hash collision kontrolü
+                // Hash collision kontrolü
                 if (candidate == target_password) {
                     return candidate;
                 } else {
@@ -39,46 +39,44 @@ std::string crack_password_single_thread(const std::string& target_password, lon
         }
     }
     
-    return ""; // Bulunamadı
+    return "";
 }
 
 int main() {
-    std::cout << "=== VERSION 1: Tek İş Parçacıklı Brute Force - Batch Mode ===\n\n";
+    std::cout << "=== VERSION 1: TEK THREAD BRUTE FORCE ===\n\n";
     
     // Veri setini yükle
     std::string dataset_file = "../../dataset/passwords.txt";
     std::vector<std::string> passwords = load_passwords_from_file(dataset_file);
     
     if (passwords.empty()) {
-        std::cout << "Veri seti boş, tek şifre moduna geçiliyor...\n";
+        std::cout << "Veri seti bos, tek sifre moduna geciliyor...\n";
         std::string single_password = "test";
         passwords.push_back(single_password);
     }
     
     std::cout << "Karakter seti: " << CHARSET << "\n";
     std::cout << "Maksimum uzunluk: " << MAX_PASSWORD_LENGTH << "\n";
-    std::cout << "Tek iş parçacığı ile sıralı deneme\n";
-    std::cout << "İlerleme her 50.000 denemede gösterilecek\n\n";
+    std::cout << "Tek thread ile sirali deneme\n";
+    std::cout << "Ilerleme her 50.000 denemede gosterilecek\n\n";
     
-    // Batch işleme için vektörler
+    // Sonuç depolama
     std::vector<bool> found_results;
     std::vector<double> times;
     std::vector<long long> attempts_list;
     
-    // Toplam zamanı ölç
     Timer total_timer;
     total_timer.start();
     
-    // Her şifreli tek tek işle
+    // Her şifreyi tek tek işle
     for (size_t i = 0; i < passwords.size(); i++) {
         std::string target_password = passwords[i];
         size_t target_hash = simple_hash(target_password);
         
-        std::cout << "\n--- Şifre " << (i+1) << "/" << passwords.size() 
+        std::cout << "\n--- Sifre " << (i+1) << "/" << passwords.size() 
                  << ": \"" << target_password << "\" ---\n";
         std::cout << "Hedef hash: " << target_hash << "\n";
         
-        // Bu şifre için zamanı ölç
         Timer timer;
         timer.start();
         
@@ -93,21 +91,21 @@ int main() {
         times.push_back(elapsed_time);
         attempts_list.push_back(attempts);
         
-        // Anında sonucu göster
+        // Sonucu göster
         if (found) {
-            std::cout << "✅ BULUNDU: " << found_password;
+            std::cout << "BULUNDU: " << found_password;
         } else {
-            std::cout << "❌ BULUNAMADI";
+            std::cout << "BULUNAMADI";
         }
-        std::cout << " | Süre: " << elapsed_time << "s";
+        std::cout << " | Sure: " << elapsed_time << "s";
         std::cout << " | Deneme: " << attempts;
-        std::cout << " | Hız: " << (attempts / elapsed_time) << " d/s\n";
+        std::cout << " | Hiz: " << (attempts / elapsed_time) << " d/s\n";
     }
     
     double total_time = total_timer.elapsed();
     
-    // Özet sonuçları göster
-    std::cout << "\n=== BATCH ÖZET SONUÇLARI ===\n";
+    // Özet sonuçlar
+    std::cout << "\n=== TEK THREAD SONUCLARI ===\n";
     int found_count = 0;
     long long total_attempts = 0;
     
@@ -116,15 +114,15 @@ int main() {
         total_attempts += attempts_list[i];
     }
     
-    std::cout << "Toplam şifre: " << passwords.size() << "\n";
+    std::cout << "Toplam sifre: " << passwords.size() << "\n";
     std::cout << "Bulunan: " << found_count << "\n";
-    std::cout << "Başarı oranı: " << (100.0 * found_count / passwords.size()) << "%\n";
-    std::cout << "Toplam süre: " << total_time << " saniye\n";
+    std::cout << "Basari orani: " << (100.0 * found_count / passwords.size()) << "%\n";
+    std::cout << "Toplam sure: " << total_time << " saniye\n";
     std::cout << "Toplam deneme: " << total_attempts << "\n";
-    std::cout << "Ortalama hız: " << (total_attempts / total_time) << " deneme/saniye\n";
+    std::cout << "Ortalama hiz: " << (total_attempts / total_time) << " deneme/saniye\n";
     
     // Sonuçları dosyaya kaydet
-    save_batch_results("version1_batch_results.txt", "Single Thread Batch", 
+    save_batch_results("results_v1.txt", "TEK THREAD", 
                       passwords, found_results, times, attempts_list, total_time);
     
     return 0;
