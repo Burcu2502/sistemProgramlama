@@ -5,7 +5,6 @@
 #include <mutex>
 #include <atomic>
 #include <cstring>
-#include <immintrin.h> // SIMD komutları için
 
 // Global değişkenler
 std::atomic<bool> password_found(false);
@@ -13,67 +12,81 @@ std::atomic<long long> total_attempts(0);
 std::string found_password;
 std::mutex result_mutex;
 
-// Vektörize edilmiş string karşılaştırma fonksiyonu
-// 16 byte'lık bloklar halinde SIMD komutlarıyla karşılaştırma yapar
-inline bool vectorized_string_compare(const std::string& s1, const std::string& s2) {
-    if (s1.length() != s2.length()) {
-        return false;
+// Vectorized hash (compiler otomatik vektörizasyon)
+inline uint32_t vectorized_hash(const std::string& str) {
+    const char* data = str.c_str();
+    size_t len = str.length();
+    uint32_t hash = 5381;
+    
+    // Loop unrolling ile vektörizasyonu teşvik et
+    size_t i = 0;
+    for (; i + 4 <= len; i += 4) {
+        hash = hash * 33 + (unsigned char)data[i];
+        hash = hash * 33 + (unsigned char)data[i+1];
+        hash = hash * 33 + (unsigned char)data[i+2];
+        hash = hash * 33 + (unsigned char)data[i+3];
     }
+    
+    // Kalan karakterleri işle
+    for (; i < len; i++) {
+        hash = hash * 33 + (unsigned char)data[i];
+    }
+    
+    return hash;
+}
 
-    const char* p1 = s1.c_str();
-    const char* p2 = s2.c_str();
-    size_t len = s1.length();
-
-    // 16'şar byte'lık bloklarla karşılaştır
-    size_t num_blocks = len / 16;
-    for (size_t i = 0; i < num_blocks; ++i) {
-        __m128i block1 = _mm_loadu_si128((const __m128i*)(p1 + i * 16));
-        __m128i block2 = _mm_loadu_si128((const __m128i*)(p2 + i * 16));
-        __m128i comparison_result = _mm_cmpeq_epi8(block1, block2);
-        
-        // Eğer 16 byte'ın tamamı eşit değilse (mask 0xFFFF olmazsa), false dön
-        if (_mm_movemask_epi8(comparison_result) != 0xFFFF) {
+// Vectorized string compare (compiler otomatik vektörizasyon)
+inline bool vectorized_compare(const std::string& str1, const std::string& str2) {
+    if (str1.length() != str2.length()) return false;
+    
+    const char* s1 = str1.c_str();
+    const char* s2 = str2.c_str();
+    size_t len = str1.length();
+    
+    // Loop unrolling ile vektörizasyonu teşvik et
+    size_t i = 0;
+    for (; i + 8 <= len; i += 8) {
+        if (s1[i] != s2[i] || s1[i+1] != s2[i+1] || 
+            s1[i+2] != s2[i+2] || s1[i+3] != s2[i+3] ||
+            s1[i+4] != s2[i+4] || s1[i+5] != s2[i+5] ||
+            s1[i+6] != s2[i+6] || s1[i+7] != s2[i+7]) {
             return false;
         }
     }
-
-    // Geriye kalan byte'ları normal şekilde karşılaştır
-    size_t remaining_bytes = len % 16;
-    if (remaining_bytes > 0) {
-        return memcmp(p1 + num_blocks * 16, p2 + num_blocks * 16, remaining_bytes) == 0;
+    
+    // Kalan karakterleri kontrol et
+    for (; i < len; i++) {
+        if (s1[i] != s2[i]) return false;
     }
-
+    
     return true;
 }
 
-// V3: Multi-threading + Manuel Vectorization worker thread
+// V3: Multi-threading + Vectorization worker thread
 void vectorized_worker_thread(const std::string& target_password, int thread_id, int num_threads) {
     long long local_attempts = 0;
-    size_t target_hash = simple_hash(target_password);
+    uint32_t target_hash = vectorized_hash(target_password);
     
-    std::string candidate;
-    candidate.reserve(MAX_PASSWORD_LENGTH);
-
-    for (int length = 1; length <= MAX_PASSWORD_LENGTH && !password_found; ++length) {
-        long long combinations_for_length = 1;
-        for(int p = 0; p < length; ++p) combinations_for_length *= CHARSET.length();
-
+    for (int length = 1; length <= MAX_PASSWORD_LENGTH && !password_found; length++) {
+        long long combinations_for_length = std::pow(CHARSET.length(), length);
+        
         for (long long i = thread_id; i < combinations_for_length && !password_found; i += num_threads) {
-            candidate.clear();
-            long long temp = i;
             
-            candidate.resize(length);
-            for (int pos = 0; pos < length; ++pos) {
-                candidate[pos] = CHARSET[temp % CHARSET.length()];
+            // Password generation
+            std::string candidate;
+            candidate.reserve(MAX_PASSWORD_LENGTH);
+            long long temp = i;
+            for (int pos = 0; pos < length; pos++) {
+                candidate += CHARSET[temp % CHARSET.length()];
                 temp /= CHARSET.length();
             }
             
             local_attempts++;
             
-            // Önce hash ile hızlı kontrol
-            if (simple_hash(candidate) == target_hash) {
-                // Hash eşleşirse, vektörize edilmiş fonksiyon ile tam karşılaştırma yap
-                if (vectorized_string_compare(candidate, target_password)) {
+            // Vectorized hash karşılaştırması
+            if (vectorized_hash(candidate) == target_hash) {
+                // Vectorized string karşılaştırması
+                if (vectorized_compare(candidate, target_password)) {
                     std::lock_guard<std::mutex> lock(result_mutex);
                     if (!password_found) {
                         password_found = true;
@@ -83,7 +96,8 @@ void vectorized_worker_thread(const std::string& target_password, int thread_id,
                 }
             }
             
-            if (local_attempts % 500000 == 0) {
+            // İlerleme raporu
+            if (local_attempts % 50000 == 0) {
                 std::cout << "V3-T" << thread_id << " - Deneme: " << local_attempts 
                          << " | Denenen: \"" << candidate << "\""
                          << " | Hedef: \"" << target_password << "\""
@@ -92,49 +106,55 @@ void vectorized_worker_thread(const std::string& target_password, int thread_id,
         }
     }
     
-found_exit:
+    found_exit:
     total_attempts += local_attempts;
 }
 
-// V3: Multi-threading + Manuel Vectorization ile şifre kırma
+// V3: Multi-threading + Vectorization şifre kırma
 std::string crack_password_vectorized(const std::string& target_password, long long& attempts) {
+    // Global değişkenleri sıfırla
     password_found = false;
     total_attempts = 0;
-    found_password.clear();
+    found_password = "";
     
     const int num_threads = 12;
-    std::vector<std::thread> threads;
-    threads.reserve(num_threads);
     
-    for (int i = 0; i < num_threads; ++i) {
-        threads.emplace_back(vectorized_worker_thread, std::cref(target_password), i, num_threads);
+    std::vector<std::thread> threads;
+    
+    // Thread'leri başlat
+    for (int i = 0; i < num_threads; i++) {
+        threads.emplace_back(vectorized_worker_thread, target_password, i, num_threads);
     }
     
+    // Thread'lerin bitmesini bekle
     for (auto& t : threads) {
         t.join();
     }
     
-    attempts = total_attempts.load();
+    attempts = total_attempts;
     return found_password;
 }
 
 int main() {
-    std::cout << "=== VERSION 3: MULTI-THREADING + MANUAL VECTORIZATION ===\n\n";
+    std::cout << "=== VERSION 3: MULTI-THREADING + VECTORIZATION ===\n\n";
     
+    // Veri setini yükle
     std::string dataset_file = "../../dataset/passwords.txt";
-    auto passwords = load_passwords_from_file(dataset_file);
+    std::vector<std::string> passwords = load_passwords_from_file(dataset_file);
     
     if (passwords.empty()) {
         std::cout << "Veri seti bos, tek sifre moduna geciliyor...\n";
-        passwords.push_back("test");
+        std::string single_password = "test";
+        passwords.push_back(single_password);
     }
     
     std::cout << "Karakter seti: " << CHARSET << "\n";
     std::cout << "Maksimum uzunluk: " << MAX_PASSWORD_LENGTH << "\n";
     std::cout << "Thread sayisi: 12\n";
-    std::cout << "Optimizasyonlar: Multi-threading + Manual SIMD Vectorization (SSE/AVX)\n";
-    std::cout << "Ilerleme her 500.000 denemede gosterilecek\n\n";
+    std::cout << "Optimizasyonlar: Multi-threading + Auto-vectorization\n";
+    std::cout << "Ilerleme her 50.000 denemede gosterilecek\n\n";
     
+    // Sonuç depolama
     std::vector<bool> found_results;
     std::vector<double> times;
     std::vector<long long> attempts_list;
@@ -142,9 +162,10 @@ int main() {
     Timer total_timer;
     total_timer.start();
     
-    for (size_t i = 0; i < passwords.size(); ++i) {
-        const auto& target_password = passwords[i];
-        size_t target_hash = simple_hash(target_password);
+    // Her şifreyi tek tek işle
+    for (size_t i = 0; i < passwords.size(); i++) {
+        std::string target_password = passwords[i];
+        uint32_t target_hash = vectorized_hash(target_password);
         
         std::cout << "\n--- Sifre " << (i+1) << "/" << passwords.size() 
                  << ": \"" << target_password << "\" ---\n";
@@ -158,11 +179,13 @@ int main() {
         
         double elapsed_time = timer.elapsed();
         
+        // Sonuçları kaydet
         bool found = !found_pwd.empty();
         found_results.push_back(found);
         times.push_back(elapsed_time);
         attempts_list.push_back(attempts);
         
+        // Sonucu göster
         if (found) {
             std::cout << "BULUNDU: " << found_pwd;
         } else {
@@ -179,11 +202,12 @@ int main() {
     
     double total_time = total_timer.elapsed();
     
-    std::cout << "\n=== MANUAL VECTORIZATION SONUCLARI ===\n";
+    // Özet sonuçlar
+    std::cout << "\n=== MULTI-THREADING + VECTORIZATION SONUCLARI ===\n";
     int found_count = 0;
     long long total_attempts_sum = 0;
     
-    for (size_t i = 0; i < passwords.size(); ++i) {
+    for (size_t i = 0; i < passwords.size(); i++) {
         if (found_results[i]) found_count++;
         total_attempts_sum += attempts_list[i];
     }
@@ -195,8 +219,9 @@ int main() {
     std::cout << "Toplam deneme: " << total_attempts_sum << "\n";
     std::cout << "Ortalama hiz: " << (total_attempts_sum / total_time) << " deneme/saniye\n";
     
-    save_batch_results("results_v3.txt", "MULTI-THREADING + MANUAL VECTORIZATION", 
+    // Sonuçları dosyaya kaydet
+    save_batch_results("results_v3.txt", "MULTI-THREADING + VECTORIZATION", 
                       passwords, found_results, times, attempts_list, total_time);
     
     return 0;
-}
+} 

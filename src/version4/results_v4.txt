@@ -1,0 +1,21 @@
+=== AKILLI OPTIMIZASYONLAR - BATCH SONUÇLARI ===
+Toplam süre: 10.879 saniye
+Toplam şifre sayısı: 13
+
+Şifre: abc | BULUNDU | Süre: 0s | Deneme: 8851
+Şifre: a12 | BULUNDU | Süre: 0s | Deneme: 45702
+Şifre: a4f | BULUNDU | Süre: 0s | Deneme: 18205
+Şifre: test | BULUNDU | Süre: 0.004s | Deneme: 820533
+Şifre: demo | BULUNDU | Süre: 0.008s | Deneme: 1451010
+Şifre: pass | BULUNDU | Süre: 0.001s | Deneme: 281174
+Şifre: key | BULUNDU | Süre: 0s | Deneme: 54528
+Şifre: hello | BULUNDU | Süre: 0.305s | Deneme: 50851640
+Şifre: admin | BULUNDU | Süre: 0.162s | Deneme: 27399574
+Şifre: user1 | BULUNDU | Süre: 0.075s | Deneme: 12674877
+Şifre: test1 | BULUNDU | Süre: 0.076s | Deneme: 12596846
+Şifre: secret | BULUNDU | Süre: 5.871s | Deneme: 889732340
+Şifre: tx123s | BULUNDU | Süre: 4.372s | Deneme: 654048209
+
+Başarı oranı: 13/13 (100%)
+Toplam deneme: 1649983489
+Ortalama hız: 1.51667e+08 deneme/saniye

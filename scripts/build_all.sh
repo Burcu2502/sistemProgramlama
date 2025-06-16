@@ -56,9 +56,6 @@ echo "Başarılı: $success_count/$total_versions"
 
 if [ $success_count -eq $total_versions ]; then
     echo "Tüm versiyonlar başarıyla derlendi!"
-    echo ""
-    echo "Çalıştırmak için:"
-    echo "  ./run_performance_tests.sh"
 else
     echo "Bazı versiyonlar derlenemedi. Hataları kontrol edin."
 fi

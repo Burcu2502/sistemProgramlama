@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -mavx2
+CXXFLAGS = -std=c++17 -O2 -Wall -Wextra -mavx
 LDFLAGS = -pthread
 
 TARGET = password_cracker_v3
