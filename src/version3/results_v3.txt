@@ -1,21 +1,20 @@
 === MULTI-THREADING + MANUAL VECTORIZATION - BATCH SONUÇLARI ===
-Toplam süre: 27.72 saniye
-Toplam şifre sayısı: 13
+Toplam süre: 26.429 saniye
+Toplam şifre sayısı: 12
 
-Şifre: abc | BULUNDU | Süre: 0s | Deneme: 331
-Şifre: a12 | BULUNDU | Süre: 0s | Deneme: 18708
-Şifre: a4f | BULUNDU | Süre: 0s | Deneme: 2079
-Şifre: test | BULUNDU | Süre: 0.006s | Deneme: 915365
-Şifre: demo | BULUNDU | Süre: 0.004s | Deneme: 559703
-Şifre: pass | BULUNDU | Süre: 0.005s | Deneme: 779817
-Şifre: key | BULUNDU | Süre: 0.006s | Deneme: 853402
-Şifre: hello | BULUNDU | Süre: 0.227s | Deneme: 27154596
-Şifre: admin | BULUNDU | Süre: 0.186s | Deneme: 22844615
-Şifre: user1 | BULUNDU | Süre: 0.389s | Deneme: 47151443
-Şifre: test1 | BULUNDU | Süre: 0.394s | Deneme: 47724058
-Şifre: secret | BULUNDU | Süre: 12.865s | Deneme: 1295255763
-Şifre: tx123s | BULUNDU | Süre: 13.632s | Deneme: 1208781337
+Şifre: abc | BULUNDU | Süre: 0s | Deneme: 456
+Şifre: a12 | BULUNDU | Süre: 0s | Deneme: 25474
+Şifre: test | BULUNDU | Süre: 0.007s | Deneme: 1012868
+Şifre: demo | BULUNDU | Süre: 0.004s | Deneme: 649418
+Şifre: pass | BULUNDU | Süre: 0.005s | Deneme: 688441
+Şifre: key | BULUNDU | Süre: 0s | Deneme: 52075
+Şifre: hello | BULUNDU | Süre: 0.281s | Deneme: 32335049
+Şifre: admin | BULUNDU | Süre: 0.184s | Deneme: 21479975
+Şifre: user1 | BULUNDU | Süre: 0.374s | Deneme: 44660042
+Şifre: test1 | BULUNDU | Süre: 0.383s | Deneme: 45374243
+Şifre: secret | BULUNDU | Süre: 12.303s | Deneme: 1181885315
+Şifre: tx123s | BULUNDU | Süre: 12.882s | Deneme: 1186642757
 
-Başarı oranı: 13/13 (100%)
-Toplam deneme: 2652041217
-Ortalama hız: 9.56725e+07 deneme/saniye
+Başarı oranı: 12/12 (100%)
+Toplam deneme: 2514806113
+Ortalama hız: 9.51533e+07 deneme/saniye
