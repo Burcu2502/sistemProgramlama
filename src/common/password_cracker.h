@@ -10,6 +10,8 @@
 
 // Ortak sabitler
 const std::string CHARSET = "abcdefghijklmnopqrstuvwxyz0123456789";
+//const std::string CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:',.<>/?`~";
+
 const int MAX_PASSWORD_LENGTH = 6;
 
 // Basit hash fonksiyonu (simülasyon için)
