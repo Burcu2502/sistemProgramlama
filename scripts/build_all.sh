@@ -3,9 +3,6 @@
 echo "=== C++ Paralel Brute-Force Projesi Derleme Scripti ==="
 echo ""
 
-# Results klasörünü oluştur
-mkdir -p ../results
-
 # Derleme başarısını takip et
 success_count=0
 total_versions=4
