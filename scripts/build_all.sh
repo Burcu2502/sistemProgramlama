@@ -44,6 +44,13 @@ g++ -std=c++17 -O3 -Wall -Wextra -pthread \
 
 echo "Tüm versiyonlar derlendi."
 
+#tek derleme
+#g++ -std=c++17 -O3 -Wall -Wextra -pthread -o password_cracker_v4 main.cpp ../common/password_cracker.cpp -lm -pthread
+
+#valgrind önek
+#valgrind --leak-check=full --show-leak-kinds=all ./src/version4/password_cracker_v4  
+
+
 # --- Hata Ayıklama (gdb) ve Profilleme (gprof) için Alternatif Derleme Komutları ---
 # Bu komutları kullanmak için yukarıdaki standart derleme komutlarını silip
 # buradaki ilgili komutların başındaki '#' işaretini kaldırarak betiği çalıştırabilirsiniz.
