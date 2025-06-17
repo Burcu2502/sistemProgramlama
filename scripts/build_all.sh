@@ -1,60 +1,73 @@
 #!/bin/bash
 
-echo "=== C++ Paralel Brute-Force Projesi Derleme Scripti ==="
-echo ""
+# Betiğin, projenin herhangi bir yerinden çalıştırılabilmesi için,
+# önce betiğin bulunduğu dizine gider, sonra da bir üst dizine (proje köküne) çıkar.
+cd "$(dirname "$0")/.."
 
-# Derleme başarısını takip et
-success_count=0
-total_versions=4
+# --- Standart Derleme Komutları ---
 
-echo "Version 1 derleniyor (Tek Thread)..."
-cd ../src/version1
-if make clean && make; then
-    echo "✓ Version 1 başarıyla derlendi"
-    success_count=$((success_count + 1))
-else
-    echo "✗ Version 1 derlemesi başarısız"
-fi
-echo ""
+# Önceki derlemelerden kalan artık dosyaları temizler.
+echo "Temizlik yapılıyor..."
+rm -f src/version1/password_cracker_v1 src/version1/*.o
+rm -f src/version2/password_cracker_v2 src/version2/*.o
+rm -f src/version3/password_cracker_v3 src/version3/*.o
+rm -f src/version4/password_cracker_v4 src/version4/*.o
+rm -f src/common/*.o
 
-echo "Version 2 derleniyor (Multi-Thread)..."
-cd ../version2
-if make clean && make; then
-    echo "✓ Version 2 başarıyla derlendi"
-    success_count=$((success_count + 1))
-else
-    echo "✗ Version 2 derlemesi başarısız"
-fi
-echo ""
+# Version 1 Derleme
+echo "Version 1 derleniyor..."
+g++ -std=c++17 -O2 -Wall -Wextra \
+    -o src/version1/password_cracker_v1 \
+    src/version1/main.cpp src/common/password_cracker.cpp \
+    -lm -pthread
 
-echo "Version 3 derleniyor (Batch Processing)..."
-cd ../version3
-if make clean && make; then
-    echo "✓ Version 3 başarıyla derlendi"
-    success_count=$((success_count + 1))
-else
-    echo "✗ Version 3 derlemesi başarısız"
-fi
-echo ""
+# Version 2 Derleme
+echo "Version 2 derleniyor..."
+g++ -std=c++17 -O2 -Wall -Wextra \
+    -o src/version2/password_cracker_v2 \
+    src/version2/main.cpp src/common/password_cracker.cpp \
+    -lm -pthread
 
-echo "Version 4 derleniyor (Akıllı Optimizasyonlar)..."
-cd ../version4
-if make clean && make; then
-    echo "✓ Version 4 başarıyla derlendi"
-    success_count=$((success_count + 1))
-else
-    echo "✗ Version 4 derlemesi başarısız"
-fi
-echo ""
+# Version 3 Derleme
+echo "Version 3 derleniyor..."
+g++ -std=c++17 -O2 -Wall -Wextra -mavx \
+    -o src/version3/password_cracker_v3 \
+    src/version3/main.cpp src/common/password_cracker.cpp \
+    -lm -pthread
 
-# Sonuç özeti
-echo "=== DERLEME SONUÇLARI ==="
-echo "Başarılı: $success_count/$total_versions"
+# Version 4 Derleme
+echo "Version 4 derleniyor..."
+g++ -std=c++17 -O3 -Wall -Wextra -pthread \
+    -o src/version4/password_cracker_v4 \
+    src/version4/main.cpp src/common/password_cracker.cpp \
+    -lm -pthread
 
-if [ $success_count -eq $total_versions ]; then
-    echo "Tüm versiyonlar başarıyla derlendi!"
-else
-    echo "Bazı versiyonlar derlenemedi. Hataları kontrol edin."
-fi
+echo "Tüm versiyonlar derlendi."
 
-cd ../../scripts 
+# --- Hata Ayıklama (gdb) ve Profilleme (gprof) için Alternatif Derleme Komutları ---
+# Bu komutları kullanmak için yukarıdaki standart derleme komutlarını silip
+# buradaki ilgili komutların başındaki '#' işaretini kaldırarak betiği çalıştırabilirsiniz.
+
+# # Version 1 (Hata ayıklama için -g bayrağı ile)
+# g++ -std=c++17 -O2 -Wall -Wextra -g \
+#     -o src/version1/password_cracker_v1 \
+#     src/version1/main.cpp src/common/password_cracker.cpp \
+#     -lm -pthread
+
+# # Version 2 (Hata ayıklama için -g bayrağı ile)
+# g++ -std=c++17 -O2 -Wall -Wextra -g \
+#     -o src/version2/password_cracker_v2 \
+#     src/version2/main.cpp src/common/password_cracker.cpp \
+#     -lm -pthread
+
+# # Version 3 (Hata ayıklama için -g bayrağı ile)
+# g++ -std=c++17 -O2 -Wall -Wextra -mavx -g \
+#     -o src/version3/password_cracker_v3 \
+#     src/version3/main.cpp src/common/password_cracker.cpp \
+#     -lm -pthread
+
+# # Version 4 (Hata ayıklama için -g, profilleme için -pg bayrağı ile)
+# g++ -std=c++17 -O3 -Wall -Wextra -pthread -g -pg \
+#     -o src/version4/password_cracker_v4 \
+#     src/version4/main.cpp src/common/password_cracker.cpp \
+#     -lm -pthread -pg 
